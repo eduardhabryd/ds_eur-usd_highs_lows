@@ -1,2 +1,4 @@
 pandas~=2.1.0
 matplotlib~=3.7.2
+MetaTrader5~=5.0.45
+pytz~=2023.3.post1
