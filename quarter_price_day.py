@@ -24,27 +24,29 @@ rates_frame.drop(
 
 date_format = "%Y-%m/%d"
 
-rates_frame["week"] = rates_frame["time"].apply(lambda x: x.strftime("%Y-%W"))
+rates_frame["quarter"] = rates_frame["time"].apply(
+    lambda x: f"{x.strftime('%Y')}-{str(x.quarter)}"
+)
 rates_frame["day"] = rates_frame["time"].apply(lambda x: x.strftime("%A"))
 
-week_max_price = rates_frame.groupby("week")["high"].idxmax()
-week_min_price = rates_frame.groupby("week")["low"].idxmin()
+quarter_max_price = rates_frame.groupby("quarter")["high"].idxmax()
+quarter_min_price = rates_frame.groupby("quarter")["low"].idxmin()
 
-week_max_df = rates_frame.loc[
-    week_max_price, ["week", "high", "day"]
+quarter_max_df = rates_frame.loc[
+    quarter_max_price, ["quarter", "high", "day"]
 ].reset_index(drop=True)
-week_min_df = rates_frame.loc[
-    week_min_price, ["week", "low", "day"]
+quarter_min_df = rates_frame.loc[
+    quarter_min_price, ["quarter", "low", "day"]
 ].reset_index(drop=True)
 
-max_day_counts = week_max_df["day"].value_counts()
-min_day_counts = week_min_df["day"].value_counts()
+max_day_counts = quarter_max_df["day"].value_counts()
+min_day_counts = quarter_min_df["day"].value_counts()
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
 
 # Plot max week price chart
 max_day_counts.plot(kind="bar", color="skyblue", alpha=0.7, ax=ax1)
-ax1.set_title("Max Week Price Formation Over Day of Week")
+ax1.set_title("Max Quarter Price Formation Over Day of Week")
 ax1.set_xlabel("Day of Week")
 ax1.set_ylabel("Frequency")
 ax1.set_xticklabels(ax1.get_xticklabels(), rotation=0)
@@ -55,7 +57,7 @@ for i, v in enumerate(max_day_counts):
 
 # Plot min week price chart
 min_day_counts.plot(kind="bar", color="salmon", alpha=0.7, ax=ax2)
-ax2.set_title("Min Week Price Formation Over Day of Week")
+ax2.set_title("Min Quarter Price Formation Over Day of Week")
 ax2.set_xlabel("Day of Week")
 ax2.set_ylabel("Frequency")
 ax2.set_xticklabels(ax2.get_xticklabels(), rotation=0)
@@ -70,7 +72,4 @@ plt.suptitle(
 )
 
 plt.tight_layout()  # Ensure the subplots don't overlap
-plt.savefig("week_price_day.png", dpi=200)
-# plt.show()
-# print(week_max_df)
-# print(week_min_df)
+plt.savefig("quarter_price_day.png", dpi=200)
